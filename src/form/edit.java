@@ -9,6 +9,8 @@ import java.sql.Statement;
 
 import model.HocPhi;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 /**
  *
@@ -150,10 +152,31 @@ public class edit extends javax.swing.JFrame {
           }
           String sql="update NopHocPhi set  khoa='"+khoa+"',NamHoc='"+namhoc+"',TienPhaiNop='"+tienphainop+"',TienDaNop='"+tiendanop+"',status='"+check+"' where idSV='"+id+"' and NamHoc='"+namhoc+"' ";
           executeQuery(sql);
+          checkStatus(id, namhoc);
           this.setVisible(false);
           this.dispose();
      }//GEN-LAST:event_jButton1ActionPerformed
-          public void executeQuery(String query) {
+       public void checkStatus(int id, String namhoc) {
+          try {
+               int check = 1;
+               String sql = "select * from NopHocPhi where idSV='" + id + "'  ";
+               PreparedStatement ps = con.prepareCall(sql);
+               ResultSet rs = ps.executeQuery();
+               while (rs.next()) {
+
+                    if (rs.getInt("status") == 0) {
+                         check = 0;
+                    }
+               }
+        
+                    String sql1 = "update SinhVien set  status='" + check + "'where idSV='" + id + "' ";
+                    executeQuery(sql1);
+               
+          } catch (SQLException e) {
+               e.printStackTrace();
+          }
+     }
+     public void executeQuery(String query) {
           Statement st;
           try {
                st = con.createStatement();
